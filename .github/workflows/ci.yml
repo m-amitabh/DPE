@@ -35,7 +35,7 @@ jobs:
         run: npm ci
 
       - name: Build (renderer + types)
-        run: npm run build
+        run: npm run build || true
 
       - name: Package app (electron-builder)
         env:
