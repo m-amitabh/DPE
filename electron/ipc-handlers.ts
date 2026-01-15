@@ -2,6 +2,7 @@
 import { ipcMain, BrowserWindow } from 'electron';
 import log from 'electron-log';
 import * as fs from 'fs/promises';
+import { glob } from 'fast-glob';
 import * as path from 'path';
 import { getStore } from './json-store';
 import { getScanJobManager } from './scan-job-manager';
@@ -52,6 +53,70 @@ export function setupIPCHandlers() {
       return createResponse(true, { touched }, undefined, requestId);
     } catch (error: any) {
       log.error('Error touching all projects:', error);
+      return createResponse(false, undefined, { code: 'INTERNAL_ERROR', message: error.message }, requestId);
+    }
+  });
+
+  // Refresh lastModifiedAt for all projects by reading filesystem mtime
+  ipcMain.handle('project:refreshModifiedFromFS', async (event, params) => {
+    const requestId = params?.requestId || '';
+    try {
+      const allProjects = await store.getAllProjects();
+      let refreshed = 0;
+
+      for (const p of allProjects) {
+        if (!p.path) continue;
+        try {
+          // Compute the latest mtime across files in the project directory.
+          // Directory mtime may not reflect updates to file contents, so walk files
+          // (limited depth) and pick the most recent mtime.
+          let latest: Date | null = null;
+          try {
+            const files = await glob('**/*', {
+              cwd: p.path,
+              onlyFiles: true,
+              deep: 6,
+              ignore: ['**/node_modules/**', '**/.git/**', '**/dist/**'],
+              stats: true
+            });
+
+            for (const f of files) {
+              const fstat = (f as any).stats;
+              if (fstat && fstat.mtime) {
+                const m = new Date(fstat.mtime);
+                if (!latest || m.getTime() > latest.getTime()) {
+                  latest = m;
+                }
+              }
+            }
+          } catch (e) {
+            // glob may fail on some paths; ignore and fallback to dir stat
+            latest = null;
+          }
+
+          if (!latest) {
+            const stats = await fs.stat(p.path);
+            latest = stats.mtime;
+          }
+
+          const mtime = latest.toISOString();
+          if (p.lastModifiedAt !== mtime) {
+            await store.updateProject(p.id, { lastModifiedAt: mtime });
+            refreshed++;
+          }
+        } catch (e) {
+          log.warn(`Failed to stat/update project ${p.id} (${p.path}):`, (e as any)?.message || e);
+        }
+      }
+
+      const allWindows = BrowserWindow.getAllWindows();
+      for (const win of allWindows) {
+        win.webContents.send('projects:refreshed', { refreshed });
+      }
+
+      return createResponse(true, { refreshed }, undefined, requestId);
+    } catch (error: any) {
+      log.error('Error refreshing projects from FS:', error);
       return createResponse(false, undefined, { code: 'INTERNAL_ERROR', message: error.message }, requestId);
     }
   });

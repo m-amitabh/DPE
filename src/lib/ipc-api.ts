@@ -19,6 +19,7 @@ const CHANNELS = {
   PROJECT_UPDATE: 'project:update',
   PROJECT_DELETE: 'project:delete',
   PROJECT_TOUCH_ALL: 'project:touchAll',
+  PROJECT_REFRESH_FROM_FS: 'project:refreshModifiedFromFS',
   SCAN_START: 'scan:start',
   SCAN_STATUS: 'scan:status',
   SCAN_CANCEL: 'scan:cancel',
@@ -124,6 +125,13 @@ export class IPCAPI {
    */
   async touchAllProjects(timestamp?: string): Promise<IPCResponse<{ touched: number }>> {
     return this.invoke(CHANNELS.PROJECT_TOUCH_ALL, { timestamp });
+  }
+
+  /**
+   * Refresh lastModifiedAt for all projects by reading filesystem mtime
+   */
+  async refreshProjectsModifiedFromFs(): Promise<IPCResponse<{ refreshed: number }>> {
+    return this.invoke(CHANNELS.PROJECT_REFRESH_FROM_FS, {});
   }
 
   // === Scan APIs ===

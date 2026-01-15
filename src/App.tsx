@@ -100,8 +100,8 @@ function App(): React.ReactElement {
     // On app startup, touch all projects to update lastModifiedAt
     (async () => {
       try {
-        await ipcAPI.touchAllProjects(new Date().toISOString());
-        // After touching, reload projects to show updated timestamps
+        await ipcAPI.refreshProjectsModifiedFromFs();
+        // After refreshing from fs, reload projects to show updated timestamps
         await loadProjects();
       } catch (e) {
         // ignore
@@ -195,7 +195,7 @@ function App(): React.ReactElement {
             setScanning(false);
             setCurrentJobId(null);
               try {
-                await ipcAPI.touchAllProjects(new Date().toISOString());
+                await ipcAPI.refreshProjectsModifiedFromFs();
               } catch {}
               await loadProjects();
           } else if (status.data.status === 'error') {

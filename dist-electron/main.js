@@ -17,12 +17,12 @@ const path$e = require("node:path");
 const log = require("electron-log");
 const fs$9 = require("fs/promises");
 const path$d = require("path");
-const crypto = require("crypto");
 const require$$0 = require("os");
 const require$$0$1 = require("util");
 const require$$0$2 = require("stream");
 const require$$0$4 = require("events");
 const require$$0$3 = require("fs");
+const crypto = require("crypto");
 const node_child_process = require("node:child_process");
 const node_string_decoder = require("node:string_decoder");
 const node_util = require("node:util");
@@ -14118,6 +14118,58 @@ function setupIPCHandlers() {
       return createResponse(true, { touched }, void 0, requestId);
     } catch (error2) {
       log.error("Error touching all projects:", error2);
+      return createResponse(false, void 0, { code: "INTERNAL_ERROR", message: error2.message }, requestId);
+    }
+  });
+  electron.ipcMain.handle("project:refreshModifiedFromFS", async (event, params) => {
+    const requestId = (params == null ? void 0 : params.requestId) || "";
+    try {
+      const allProjects = await store.getAllProjects();
+      let refreshed = 0;
+      for (const p of allProjects) {
+        if (!p.path) continue;
+        try {
+          let latest = null;
+          try {
+            const files = await out.glob("**/*", {
+              cwd: p.path,
+              onlyFiles: true,
+              deep: 6,
+              ignore: ["**/node_modules/**", "**/.git/**", "**/dist/**"],
+              stats: true
+            });
+            for (const f of files) {
+              const fstat = f.stats;
+              if (fstat && fstat.mtime) {
+                const m = new Date(fstat.mtime);
+                if (!latest || m.getTime() > latest.getTime()) {
+                  latest = m;
+                }
+              }
+            }
+          } catch (e) {
+            latest = null;
+          }
+          if (!latest) {
+            const stats = await fs__namespace.stat(p.path);
+            latest = stats.mtime;
+          }
+          const mtime = latest.toISOString();
+          if (p.lastModifiedAt !== mtime) {
+            await store.updateProject(p.id, { lastModifiedAt: mtime });
+            refreshed++;
+          }
+        } catch (e) {
+          log.warn(`Failed to stat/update project ${p.id} (${p.path}):`, (e == null ? void 0 : e.message) || e);
+        }
+      }
+      const allWindows = electron.BrowserWindow.getAllWindows();
+      for (const win of allWindows) {
+        win.webContents.send("projects:refreshed", { refreshed });
+      }
+      return createResponse(true, { refreshed }, void 0, requestId);
+    } catch (error2) {
+      log.error("Error refreshing projects from FS:", error2);
       return createResponse(false, void 0, { code: "INTERNAL_ERROR", message: error2.message }, requestId);
     }
   });
