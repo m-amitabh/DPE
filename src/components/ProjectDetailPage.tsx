@@ -10,17 +10,8 @@ import { formatBytes, formatRelativeTime, getRemoteProvider } from '../lib/utils
 import { ipcAPI } from '../lib/ipc-api';
 import { FileTree } from './file-tree';
 import { BranchSelector } from './branch-selector';
+import { MarkdownRenderer } from './markdown-renderer';
 
-// Simple inline MarkdownRenderer fallback: renders markdown as plain text with preserved line breaks.
-// This avoids a missing-module error if an external markdown renderer file is not present.
-function MarkdownRenderer({ content }: { content: string }) {
-  const escaped = content
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-  const html = escaped.replace(/\r\n|\r|\n/g, '<br/>');
-  return <div dangerouslySetInnerHTML={{ __html: html }} />;
-}
 
 // Project detail page with Overview, Files, and README tabs
 interface ProjectDetailPageProps {
