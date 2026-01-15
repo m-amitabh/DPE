@@ -1,0 +1,8 @@
+{
+  "meta": { "version": 1 },
+  "projects": [
+    { "id": "proj-1", "name": "Alpha", "path": "/Users/you/projects/alpha", "provider": "git" },
+    { "id": "proj-2", "name": "Beta", "path": "/Users/you/projects/beta", "provider": "git" },
+    { "id": "proj-3", "name": "Gamma", "path": "/Users/you/projects/gamma", "provider": "git" }
+  ]
+}

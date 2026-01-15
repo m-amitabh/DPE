@@ -33,7 +33,10 @@ Desktop Project Explorer helps developers organize their local projects by:
 
 ## Project Status
 
-🚧 **In Development** - Currently implementing M0 (Foundation)
+✅ **M0 Complete** - Foundation established (JSON store, IPC, Electron scaffold)
+✅ **M1 Complete** - Scanner, project discovery, search index working
+✅ **M2 Complete** - Filtering & search UI with professional Figma-aligned design
+✅ **M3 Complete** - Project detail page with Overview, Files, README tabs, and edit dialog
 
 See [ARCHITECTURE_PROPOSAL.md](ARCHITECTURE_PROPOSAL.md) for detailed technical architecture.
 
@@ -70,6 +73,28 @@ npm run dev
 npm run package
 ```
 
+### Running the app during development
+
+Use the guarded script which starts Vite and launches Electron after the dev server is ready:
+
+```bash
+npm run electron:dev
+```
+
+Or run in two terminals (recommended when iterating on the renderer):
+
+Terminal A — start Vite:
+```bash
+npm run dev -- --port 5173
+```
+
+Terminal B — wait and launch Electron (after Vite is ready):
+```bash
+npx wait-on http://localhost:5173 && VITE_DEV_SERVER_PORT=5173 npx electron .
+```
+
+If you see a blank screen in the Electron window, confirm the dev server is listening (`nc -vz localhost 5173` or `curl -I http://localhost:5173`) and then relaunch Electron. The app logs are saved to the terminal that launched Electron and can be inspected for IPC / HMR errors.
+
 ## Usage
 
 1. **Add Scan Paths**: Configure directories to scan in Settings
@@ -103,6 +128,8 @@ This is a personal project. Feel free to fork for your own use.
 - [ ] M2: Filtering & search
 - [ ] M3: Project detail views
 - [ ] M4: Quick actions & settings
+	- Import preview and import/merge confirmation
+	- Export/import (JSON), clear cache and re-scan
 - [ ] M5: Polish & packaging
 
 See [ARCHITECTURE_PROPOSAL.md](ARCHITECTURE_PROPOSAL.md) for detailed milestones.
