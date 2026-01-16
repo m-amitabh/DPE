@@ -1,6 +1,6 @@
 # Dependencies
 node_modules/
-package-lock.json
+#package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
@@ -81,3 +81,8 @@ projects.json.tmp
 .electron-builder-config.yml
 Figma_Code/**
 ss/**
+
+# build outputs
+dist/**
+dist-electron/**
+release/
