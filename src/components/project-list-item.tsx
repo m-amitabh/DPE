@@ -1,7 +1,7 @@
 import { Project } from '../lib/types';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
-import { Github, GitBranch, HardDrive, Calendar, Clock, ExternalLink, Terminal, Code2 } from 'lucide-react';
+import { Github, Clock, ExternalLink, Terminal, Code2 } from 'lucide-react';
 
 interface ProjectListItemProps {
   project: Project;
@@ -9,7 +9,6 @@ interface ProjectListItemProps {
   onOpenIDE: (project: Project) => void;
   onOpenTerminal: (project: Project) => void;
   onOpenRemote: (project: Project) => void;
-  onDelete: (project: Project) => void;
   isSelected: boolean;
 }
 
@@ -19,7 +18,6 @@ export function ProjectListItem({
   onOpenIDE,
   onOpenTerminal,
   onOpenRemote,
-  onDelete,
   isSelected
 }: ProjectListItemProps) {
   const remoteUrl = project.remotes.length > 0 ? project.remotes[0].url : null;
@@ -74,10 +72,4 @@ function formatRelativeTime(date: string | undefined) {
   const years = Math.floor(months / 12);
   return `${years} year${years !== 1 ? 's' : ''} ago`;
 }
-function formatBytes(bytes: number | undefined) {
-  if (!bytes) return '';
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes/1024).toFixed(2)} KB`;
-  if (bytes < 1024 * 1024 * 1024) return `${(bytes/1024/1024).toFixed(2)} MB`;
-  return `${(bytes/1024/1024/1024).toFixed(2)} GB`;
-}
+// formatBytes function is already defined elsewhere

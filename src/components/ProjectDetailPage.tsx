@@ -380,7 +380,8 @@ function OverviewTab({ project }: { project: Project }) {
   );
 }
 
-// Files Tab with File Tree
+// Files Tab with File Tree - currently not used
+/*
 function FilesTab({ project }: { project: Project }) {
   const [fileTree, setFileTree] = useState<FileTreeNode | null>(null);
   const [loading, setLoading] = useState(true);
@@ -441,6 +442,7 @@ function FilesTab({ project }: { project: Project }) {
     </Card>
   );
 }
+*/
 
 // README Tab with Markdown Rendering
 function ReadmeTab({ project }: { project: Project }) {

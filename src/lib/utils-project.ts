@@ -26,9 +26,17 @@ export function sortProjects(projects: Project[], sortBy: SortBy): Project[] {
   
   switch (sortBy) {
     case "last_used":
-      return sorted.sort((a, b) => new Date(b.last_used).getTime() - new Date(a.last_used).getTime());
+      return sorted.sort((a, b) => {
+        const aTime = a.last_used ? new Date(a.last_used).getTime() : 0;
+        const bTime = b.last_used ? new Date(b.last_used).getTime() : 0;
+        return bTime - aTime;
+      });
     case "created":
-      return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      return sorted.sort((a, b) => {
+        const aTime = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const bTime = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return bTime - aTime;
+      });
     case "last_commit":
       return sorted.sort((a, b) => {
         const aCommit = a.git?.last_commit ? new Date(a.git.last_commit).getTime() : 0;
@@ -36,10 +44,18 @@ export function sortProjects(projects: Project[], sortBy: SortBy): Project[] {
         return bCommit - aCommit;
       });
     case "disk_usage":
-      return sorted.sort((a, b) => b.disk_usage_bytes - a.disk_usage_bytes);
+      return sorted.sort((a, b) => {
+        const aDisk = a.disk_usage_bytes ?? 0;
+        const bDisk = b.disk_usage_bytes ?? 0;
+        return bDisk - aDisk;
+      });
     case "importance":
-      const importanceOrder = { high: 3, medium: 2, low: 1 };
-      return sorted.sort((a, b) => importanceOrder[b.importance] - importanceOrder[a.importance]);
+      const importanceOrder: Record<number, number> = { 5: 5, 4: 4, 3: 3, 2: 2, 1: 1 };
+      return sorted.sort((a, b) => {
+        const aImportance = importanceOrder[a.importance] ?? 0;
+        const bImportance = importanceOrder[b.importance] ?? 0;
+        return bImportance - aImportance;
+      });
     case "name":
       return sorted.sort((a, b) => a.name.localeCompare(b.name));
     default:

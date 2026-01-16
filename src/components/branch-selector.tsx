@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { ipcAPI } from '../lib/ipc-api';
 import { Button } from './ui/button';
 import { Loader2, ChevronDown, Plus, Check } from 'lucide-react';
@@ -47,20 +47,20 @@ export function BranchSelector({ project }: BranchSelectorProps) {
     return () => document.removeEventListener('click', onDocClick);
   }, [open]);
 
-  const checkout = async (newBranch: string, force = false) => {
+  const checkout = async (newBranch: string) => {
     setLoading(true);
-    const res = await ipcAPI.checkoutBranch(project.id, newBranch, force as any);
+    const res = await ipcAPI.checkoutBranch(project.id, newBranch);
     setLoading(false);
     if (res.success) {
       setSelected(newBranch);
       toast.success(`Checked out ${newBranch}`);
       setOpen(false);
-    } else if (res.error?.code === 'UNCOMMITTED_CHANGES') {
+    } else if (res.error?.message?.includes('uncommitted changes')) {
       // Prompt user to force checkout (not ideal but simple)
       const confirmMsg = 'There are uncommitted changes. Stash changes and checkout?';
       const doForce = window.confirm(confirmMsg);
       if (doForce) {
-        await checkout(newBranch, true);
+        await checkout(newBranch);
       }
     } else {
       toast.error(res.error?.message || 'Failed to checkout branch');
@@ -103,7 +103,7 @@ export function BranchSelector({ project }: BranchSelectorProps) {
                       (async () => {
                         setLoading(true);
                         try {
-                          await ipcAPI.checkoutBranch(project.id, name as any, true as any);
+                          await ipcAPI.checkoutBranch(project.id, name);
                           // refresh branches
                           const res = await ipcAPI.listBranches(project.id);
                           if (res.success && res.data) setBranches(res.data.branches || []);

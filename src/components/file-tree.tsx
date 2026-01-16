@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ChevronRight, ChevronDown, File, FileCode, FileImage, FileText, Folder, FolderOpen } from 'lucide-react';
+import { useState } from 'react';
+import { ChevronRight, ChevronDown, File, FileCode, FileImage, FileText, Folder } from 'lucide-react';
 import type { FileTreeNode } from '../lib/types';
 import { formatBytes } from '../lib/utils-project';
 

@@ -1,4 +1,4 @@
-import { FolderGit2, Folder, Github, GitBranch, HardDrive, Calendar, Clock, ExternalLink, Terminal, Code2 } from "lucide-react";
+import { FolderGit2, Folder, Github, GitBranch, HardDrive, Clock, ExternalLink, Terminal, Code2 } from "lucide-react";
 import { Card, CardHeader, CardContent, CardFooter } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -17,7 +17,6 @@ interface ProjectCardProps {
   onOpenIDE: (project: Project) => void;
   onOpenTerminal: (project: Project) => void;
   onOpenRemote: (project: Project) => void;
-  onDelete: (project: Project) => void;
   isSelected: boolean;
 }
 
@@ -27,7 +26,6 @@ export function ProjectCard({
   onOpenIDE,
   onOpenTerminal,
   onOpenRemote,
-  onDelete,
   isSelected
 }: ProjectCardProps) {
   const remoteUrl = project.remotes.length > 0 ? project.remotes[0].url : null;

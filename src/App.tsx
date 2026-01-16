@@ -480,7 +480,6 @@ function App(): React.ReactElement {
                           onOpenIDE={handleOpenIDE}
                           onOpenTerminal={handleOpenTerminal}
                           onOpenRemote={handleOpenRemote}
-                          onDelete={handleDeleteProject}
                            isSelected={Boolean(viewingProject && (viewingProject as Project).id === project.id)}
                         />
                       ))}
@@ -495,7 +494,6 @@ function App(): React.ReactElement {
                           onOpenIDE={handleOpenIDE}
                           onOpenTerminal={handleOpenTerminal}
                           onOpenRemote={handleOpenRemote}
-                          onDelete={handleDeleteProject}
                            isSelected={Boolean(viewingProject && (viewingProject as Project).id === project.id)}
                         />
                       ))}
