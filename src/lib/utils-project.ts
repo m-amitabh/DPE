@@ -9,7 +9,8 @@ export function formatBytes(bytes: number): string {
   return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
 }
 
-export function formatRelativeTime(dateString: string): string {
+export function formatRelativeTime(dateString?: string | null): string {
+  if (!dateString) return "";
   return formatDistanceToNow(new Date(dateString), { addSuffix: true });
 }
 
@@ -26,9 +27,17 @@ export function sortProjects(projects: Project[], sortBy: SortBy): Project[] {
   
   switch (sortBy) {
     case "last_used":
-      return sorted.sort((a, b) => new Date(b.last_used).getTime() - new Date(a.last_used).getTime());
+      return sorted.sort((a, b) => {
+        const aTime = a.last_used ? new Date(a.last_used).getTime() : 0;
+        const bTime = b.last_used ? new Date(b.last_used).getTime() : 0;
+        return bTime - aTime;
+      });
     case "created":
-      return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      return sorted.sort((a, b) => {
+        const aTime = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const bTime = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return bTime - aTime;
+      });
     case "last_commit":
       return sorted.sort((a, b) => {
         const aCommit = a.git?.last_commit ? new Date(a.git.last_commit).getTime() : 0;
@@ -36,10 +45,10 @@ export function sortProjects(projects: Project[], sortBy: SortBy): Project[] {
         return bCommit - aCommit;
       });
     case "disk_usage":
-      return sorted.sort((a, b) => b.disk_usage_bytes - a.disk_usage_bytes);
+      return sorted.sort((a, b) => (b.disk_usage_bytes ?? 0) - (a.disk_usage_bytes ?? 0));
     case "importance":
-      const importanceOrder = { high: 3, medium: 2, low: 1 };
-      return sorted.sort((a, b) => importanceOrder[b.importance] - importanceOrder[a.importance]);
+      // `importance` is a numeric value 1-5; higher value = more important
+      return sorted.sort((a, b) => (b.importance ?? 0) - (a.importance ?? 0));
     case "name":
       return sorted.sort((a, b) => a.name.localeCompare(b.name));
     default:

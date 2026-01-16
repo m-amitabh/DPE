@@ -207,9 +207,10 @@ export class IPCAPI {
 
   /**
    * Checkout a git branch for a project
+   * @param force optional boolean to force checkout (passes through to main)
    */
-  async checkoutBranch(projectId: string, branch: string): Promise<IPCResponse<{ branch: string }>> {
-    return this.invoke(CHANNELS.GIT_CHECKOUT, { projectId, branch });
+  async checkoutBranch(projectId: string, branch: string, force?: boolean): Promise<IPCResponse<{ branch: string }>> {
+    return this.invoke(CHANNELS.GIT_CHECKOUT, { projectId, branch, force });
   }
 
   // === Quick Actions ===
