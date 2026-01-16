@@ -33,6 +33,14 @@ export interface Project {
   scanStatus: 'complete' | 'pending' | 'scanning' | 'error' | 'user-modified';
   lastScannedAt: string | null;
   scanErrors?: string[];
+
+  // Backwards-compatibility aliases (some modules still reference older field names)
+  created_at?: string;
+  last_used?: string;
+  git?: {
+    last_commit?: string;
+  };
+  disk_usage_bytes?: number;
   
   // Git provider API enrichment (optional)
   stars?: number;
@@ -102,3 +110,7 @@ export interface FileTreeNode {
   size: number;
   children?: FileTreeNode[];
 }
+
+// Additional exported helper types used across the codebase
+export type RemoteProvider = 'github' | 'gitlab' | 'bitbucket' | null;
+export type SortBy = 'last_used' | 'created' | 'last_commit' | 'disk_usage' | 'importance' | 'name';
