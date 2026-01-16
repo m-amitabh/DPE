@@ -56,6 +56,8 @@ export function BranchSelector({ project }: BranchSelectorProps) {
       toast.success(`Checked out ${newBranch}`);
       setOpen(false);
     } else if (res.error?.message?.includes('uncommitted changes')) {
+      // TODO: Backend should return structured error codes for more reliable error handling
+      // Currently checking error message content which is fragile
       // Prompt user to force checkout (not ideal but simple)
       const confirmMsg = 'There are uncommitted changes. Stash changes and checkout?';
       const doForce = window.confirm(confirmMsg);

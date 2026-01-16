@@ -50,12 +50,8 @@ export function sortProjects(projects: Project[], sortBy: SortBy): Project[] {
         return bDisk - aDisk;
       });
     case "importance":
-      const importanceOrder: Record<number, number> = { 5: 5, 4: 4, 3: 3, 2: 2, 1: 1 };
-      return sorted.sort((a, b) => {
-        const aImportance = importanceOrder[a.importance] ?? 0;
-        const bImportance = importanceOrder[b.importance] ?? 0;
-        return bImportance - aImportance;
-      });
+      // Sort by importance value (higher numbers = higher importance)
+      return sorted.sort((a, b) => b.importance - a.importance);
     case "name":
       return sorted.sort((a, b) => a.name.localeCompare(b.name));
     default:
