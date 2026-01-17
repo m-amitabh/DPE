@@ -173,21 +173,15 @@ export class Scanner {
         } catch {}
 
         if (includeAsProject) {
-          // User requested this path be treated as a project regardless of children
+          // User explicitly requested this path be treated as a project
           candidates.add(scanPath);
-        } else if (!childProjectsFound) {
-          // Only include the top-level path if no child projects were found and
-          // it appears to be a project by indicators.
-          try {
-            const readmes = await this.findReadmeFiles(scanPath);
-            const lang = await this.detectLanguage(scanPath);
-            if ((readmes && readmes.length > 0) || lang) {
-              candidates.add(scanPath);
-            }
-          } catch (e) {
-            // ignore
-          }
         }
+        // NOTE: Previously we auto-included top-level non-git directories if
+        // they contained README/language indicators. That caused folders like
+        // a plain "demo" directory to be added even when the user did not
+        // check "Include as project". To match user expectation, only
+        // include the provided path when `includeAsProject` is true. Git
+        // repositories are handled above and will still be included.
       } catch (error: any) {
         log.warn(`Failed to scan path ${scanPath}:`, error.message);
       }

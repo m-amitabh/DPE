@@ -4,22 +4,8 @@ import { HelpCircle, ChevronRight, Github } from 'lucide-react';
 import { Button } from './ui/button';
 import { ipcAPI } from '../lib/ipc-api';
 
-const HELP_ITEMS = [
-  'Help Center',
-  'Support Forum',
-  'YouTube videos',
-  'Release notes',
-  'Legal summary',
-  'Ask the community',
-  'Contact support',
-  'Report abuse',
-  'Change keyboard layout...',
-  'Change language...'
-];
-
 export function HelpMenu() {
   const [open, setOpen] = useState(false);
-  const [page, setPage] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -58,39 +44,13 @@ export function HelpMenu() {
                   <ChevronRight className="h-4 w-4 text-muted-foreground" />
                 </button>
               </li>
-              {HELP_ITEMS.map(item => (
-                <li key={item}>
-                  <button
-                    className="w-full text-left px-4 py-3 hover:bg-muted flex items-center justify-between"
-                    onClick={() => { setPage(item); setOpen(false); }}
-                  >
-                    <span>{item}</span>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                  </button>
-                </li>
-              ))}
             </ul>
           </div>
         </>,
         document.body
       )}
 
-      {/* Modal for pages */}
-      {page && ReactDOM.createPortal(
-        <div className="fixed inset-0 z-60 flex items-center justify-center">
-          <div className="absolute inset-0 bg-transparent pointer-events-auto" onClick={() => setPage(null)} />
-          <div className="relative bg-card rounded-lg w-[720px] max-w-full p-6 z-10">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">{page}</h2>
-              <Button variant="ghost" size="icon" onClick={() => setPage(null)}>✕</Button>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              This page is coming soon. We will add detailed content for "{page}" here.
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
+      {/* No additional help pages configured; only GitHub link is shown */}
     </div>
   );
 }

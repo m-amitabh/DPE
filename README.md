@@ -1,135 +1,201 @@
+
+
+
 # Desktop Project Explorer (DPE)
 
-A desktop application for managing and exploring software projects on your local machine. Scan directories, visualize project metadata, browse files, and quickly open projects in your IDE or terminal.
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Build](https://img.shields.io/github/actions/workflow/status/m-amitabh/DPE/build.yml?branch=main)](https://github.com/m-amitabh/DPE/actions)
+[![Releases](https://img.shields.io/github/v/release/m-amitabh/DPE)](https://github.com/m-amitabh/DPE/releases)
 
-## Overview
+**Desktop Project Explorer (DPE)** is a modern, open source desktop app for managing and exploring software projects on your local machine. Scan directories, visualize project metadata, browse files, and quickly open projects in your IDE or terminal.
 
-Desktop Project Explorer helps developers organize their local projects by:
-- **Auto-discovering** Git and local projects in specified directories
-- **Displaying** project metadata (language, stars, last commit, file count)
-- **Filtering & searching** with fuzzy search and advanced filters
-- **Quick actions** to open projects in IDE, terminal, or on GitHub/GitLab
-- **README viewing** with syntax highlighting and Mermaid diagram support
 
 ## Features
 
-- 🔍 **Smart Scanning**: Configurable directory scanning with respect for ignore patterns
-- 📊 **Project Grid/List Views**: Switch between card grid and detailed list layouts
-- 🏷️ **Tagging & Importance**: Organize projects with custom tags and priority levels
-- 🔗 **Git Integration**: Automatic detection of GitHub/GitLab repos with optional API enrichment
-- ⚡ **Fast Search**: In-memory fuzzy search powered by Fuse.js
-- 📝 **Markdown Rendering**: View project READMEs with syntax highlighting
-- 🎨 **Dark/Light Themes**: System-aware theme support
-- 🔒 **Local-First**: All data stays on your machine, no telemetry
+- **Auto-discover** Git and local projects in specified directories
+- **Project metadata**: language, stars, last commit, file count
+- **Fuzzy search & filters** for fast navigation
+- **Quick actions**: open in IDE, terminal, or on GitHub/GitLab
+- **README viewing** with syntax highlighting and Mermaid diagram support
+- **Smart scanning**: respects ignore patterns
+- **Tagging & importance**: organize with custom tags and priorities
+- **Dark/Light themes**: system-aware
+- **Local-first**: all data stays on your machine, no telemetry
+
 
 ## Tech Stack
 
-- **Desktop Runtime**: Electron
-- **Frontend**: React + TypeScript + Vite
-- **UI Components**: Radix UI + Tailwind CSS
-- **State Management**: Zustand + React Query
-- **Storage**: JSON-based local storage with atomic writes
-- **Search**: Fuse.js for fuzzy matching
+- **Electron** (desktop runtime)
+- **React + TypeScript + Vite** (frontend)
+- **Radix UI + Tailwind CSS** (UI components)
+- **Zustand + React Query** (state management)
+- **Fuse.js** (fuzzy search)
 
-## Project Status
 
-✅ **M0 Complete** - Foundation established (JSON store, IPC, Electron scaffold)
-✅ **M1 Complete** - Scanner, project discovery, search index working
-✅ **M2 Complete** - Filtering & search UI with professional Figma-aligned design
-✅ **M3 Complete** - Project detail page with Overview, Files, README tabs, and edit dialog
 
-See [ARCHITECTURE_PROPOSAL.md](ARCHITECTURE_PROPOSAL.md) for detailed technical architecture.
+## Architecture
 
-## Installation (Coming Soon)
+The app uses a standard Electron split-process architecture:
 
-Once released, installation will be:
+- **Renderer**: React + Vite UI, markdown rendering (via `react-markdown` + Mermaid)
+- **Main**: Handles file-system access, scan jobs, IPC, and storage
+- **Store**: Local JSON store for persistence; search index rebuilt from stored projects
+- **Packaging**: `electron-builder` creates platform installers
 
-**macOS**:
-```bash
-# Download DPE-1.0.0.dmg from releases
-# Drag app to Applications folder
+
+```mermaid
+flowchart LR
+	subgraph Renderer
+		UI["UI (React + Vite)"]
+		UI -->|ipcRenderer| IPC["IPC Renderer"]
+	end
+	subgraph Main
+		IPCM["IPC Main"]
+		IPCM --> Handlers["IPC Handlers"]
+		Handlers --> Store["JSON Store"]
+		Handlers --> Scanner["Scan Job Manager"]
+		Handlers --> Search["Search Index"]
+		Handlers --> Git["Git CLI"]
+		Handlers --> OS["OS (open, terminal, shell)"]
+		Handlers --> Packager["Packager (electron-builder)"]
+	end
+	IPC -->|send/handle| IPCM
+	UI -->|dev server| Vite["Vite Dev Server (dev)"]
+	Vite -.-> UI
+	Store -->|data| UI
+	Scanner --> Search
+	Git --> Handlers
+	OS -.->|spawn/open| Handlers
 ```
 
-**Windows**:
+
+
+
+
+
+
+
+
+
+
+
+## Gallery
+
+Explore the Desktop Project Explorer in action. Here’s a visual tour of the interface and features:
+
+<div align="center" style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;">
+
+
+<img src="images/1. Tile Viiew.png" alt="Tile View" width="320" style="margin: 6px; border-radius: 8px; box-shadow: 0 2px 8px #0002;" />
+<img src="images/1.1 Filter View.png" alt="Filter View" width="320" style="margin: 6px; border-radius: 8px; box-shadow: 0 2px 8px #0002;" />
+<img src="images/2. tile.png" alt="Tile" width="320" style="margin: 6px; border-radius: 8px; box-shadow: 0 2px 8px #0002;" />
+<img src="images/3. List View 1.png" alt="List View 1" width="320" style="margin: 6px; border-radius: 8px; box-shadow: 0 2px 8px #0002;" />
+<img src="images/4. List View Hover.png" alt="List View Hover" width="320" style="margin: 6px; border-radius: 8px; box-shadow: 0 2px 8px #0002;" />
+<img src="images/5. Open View.png" alt="Open View" width="320" style="margin: 6px; border-radius: 8px; box-shadow: 0 2px 8px #0002;" />
+<img src="images/6. recent commits.png" alt="Recent Commits" width="320" style="margin: 6px; border-radius: 8px; box-shadow: 0 2px 8px #0002;" />
+<img src="images/7. Multiple md file selector and view.png" alt="Multiple md file selector and view" width="320" style="margin: 6px; border-radius: 8px; box-shadow: 0 2px 8px #0002;" />
+<img src="images/8. branch selector.png" alt="Branch Selector" width="320" style="margin: 6px; border-radius: 8px; box-shadow: 0 2px 8px #0002;" />
+<img src="images/8.5 Directory Structure View.png" alt="Directory Structure View" width="320" style="margin: 6px; border-radius: 8px; box-shadow: 0 2px 8px #0002;" />
+<img src="images/9. Edit Metadata.png" alt="Edit Metadata" width="320" style="margin: 6px; border-radius: 8px; box-shadow: 0 2px 8px #0002;" />
+<img src="images/10. Settings.png" alt="Settings" width="320" style="margin: 6px; border-radius: 8px; box-shadow: 0 2px 8px #0002;" />
+<img src="images/15. Search View.png" alt="Search View" width="320" style="margin: 6px; border-radius: 8px; box-shadow: 0 2px 8px #0002;" />
+
+</div>
+
+
+# Desktop Project Explorer (DPE)
+
+A lightweight desktop app to discover, browse, and manage your local software projects.
+
+Quick highlights
+- Auto-discover Git and local projects under configured scan paths
+- View project metadata, file tree and README (Mermaid diagrams supported)
+- Quick actions: open in IDE, open terminal, view on GitHub
+- Local-first: your project data stays on your machine
+
+Repository: https://github.com/m-amitabh/DPE
+
+---
+
+## Install
+
+macOS
+- Download the `.dmg` from Releases and drag the app to `/Applications`.
+
+Windows
+- Run the installer (`.exe`) from Releases.
+
+> Note: prefer the notarized macOS build for the smoothest first-run experience. See Gatekeeper guidance below if you encounter blocking warnings.
+
+---
+
+## macOS Gatekeeper (first-run guidance)
+
+If macOS prevents the app from opening (common for downloads outside the App Store):
+
+1. In Finder, right-click (or Control-click) the app and choose "Open". In the dialog, click "Open" again — this allows the app while keeping Gatekeeper protections.
+2. If that doesn't work, open System Settings → Privacy & Security and look for an "Open Anyway" or allow option for the app under the General section.
+
+Advanced (optional): to remove quarantine flags for an app you trust:
+
 ```bash
-# Download DPE-Setup-1.0.0.exe from releases
-# Run installer
+sudo xattr -rd com.apple.quarantine /Applications/"Desktop Project Explorer".app
 ```
 
-## Development Setup
+If macOS reports the app is "damaged and can't be opened", prefer a notarized release or use the right-click/Open flow above.
 
-Requirements:
-- Node.js 18+
-- npm or yarn
+---
+
+## Development (quickstart)
+
+Requirements: Node.js 18+, npm
 
 ```bash
-# Install dependencies
 npm install
+npm run dev         # start renderer dev server
+npm run electron:dev # launch Electron against the dev server
+```
 
-# Start development mode
-npm run dev
+To build a packaged release:
 
-# Package for distribution
+```bash
 npm run package
 ```
 
-### Running the app during development
+---
 
-Use the guarded script which starts Vite and launches Electron after the dev server is ready:
-
-```bash
-npm run electron:dev
-```
-
-Or run in two terminals (recommended when iterating on the renderer):
-
-Terminal A — start Vite:
-```bash
-npm run dev -- --port 5173
-```
-
-Terminal B — wait and launch Electron (after Vite is ready):
-```bash
-npx wait-on http://localhost:5173 && VITE_DEV_SERVER_PORT=5173 npx electron .
-```
-
-If you see a blank screen in the Electron window, confirm the dev server is listening (`nc -vz localhost 5173` or `curl -I http://localhost:5173`) and then relaunch Electron. The app logs are saved to the terminal that launched Electron and can be inspected for IPC / HMR errors.
 
 ## Usage
 
-1. **Add Scan Paths**: Configure directories to scan in Settings
-2. **Scan Projects**: Click "Scan" to discover projects (or enable auto-scan)
-3. **Browse & Filter**: Use search, filters, and tags to find projects
-4. **View Details**: Click any project to see files, README, and git info
-5. **Quick Actions**: Open in IDE, terminal, or view on GitHub
+1. Open **Settings** and add one or more scan paths.
+2. Click **Scan** to discover projects.
+3. Browse, filter, and open projects. Use the **README** tab to view documentation and diagrams.
 
-## Configuration
+Tip: Use the "Include as project" checkbox in Settings to explicitly treat a non-repository folder as a project.
 
-Settings include:
-- Scan paths and ignore patterns
-- Scan frequency (manual, daily, weekly)
-- Default IDE and terminal commands
-- GitHub/GitLab API tokens (optional)
-- UI preferences (theme, view mode, sort order)
+---
 
-## License
-
-Personal use project - License TBD
 
 ## Contributing
 
-This is a personal project. Feel free to fork for your own use.
+Contributions are welcome! Please:
+- Fork the repo and create a feature branch
+- Open a pull request with a clear description
+- Follow the code style and add tests if possible
+- See [ARCHITECTURE_PROPOSAL.md](ARCHITECTURE_PROPOSAL.md) for design notes
 
-## Roadmap
+By participating, you agree to abide by the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/).
 
-- [x] Architecture design
-- [ ] M0: Foundation (JSON store, IPC, Electron scaffold)
-- [ ] M1: Scanner & project discovery
-- [ ] M2: Filtering & search
-- [ ] M3: Project detail views
-- [ ] M4: Quick actions & settings
-	- Import preview and import/merge confirmation
-	- Export/import (JSON), clear cache and re-scan
-- [ ] M5: Polish & packaging
 
-See [ARCHITECTURE_PROPOSAL.md](ARCHITECTURE_PROPOSAL.md) for detailed milestones.
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+## Community & Support
+
+- [Discussions](https://github.com/m-amitabh/DPE/discussions)
+- [Issues](https://github.com/m-amitabh/DPE/issues)
+
+---
+
+Made with ❤️ by [@m-amitabh](https://github.com/m-amitabh) and contributors.

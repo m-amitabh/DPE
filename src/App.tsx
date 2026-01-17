@@ -265,7 +265,7 @@ function App(): React.ReactElement {
     }
   };
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setSearchQuery('');
     setFilters({
       type: 'all',
@@ -277,7 +277,18 @@ function App(): React.ReactElement {
     setSortBy('lastModifiedAt');
     setSortOrder('desc');
     setCurrentPage(1);
-    loadProjects();
+    try {
+      // Show a short toast while refresh is running
+      toast('Refreshing projects...');
+      // Ensure main process refreshes project mtimes from filesystem first
+      await ipcAPI.refreshProjectsModifiedFromFs();
+      await loadProjects();
+      toast.success('Projects refreshed');
+    } catch (e: any) {
+      toast.error(e?.message || 'Failed to refresh projects');
+      // still attempt to load projects to recover UI
+      try { await loadProjects(); } catch {}
+    }
   };
 
   const handleViewProject = (project: Project) => {

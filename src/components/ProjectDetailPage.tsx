@@ -458,7 +458,9 @@ function ReadmeTab({ project }: { project: Project }) {
         const files = response.data.mdFiles;
         setMdFiles(files);
         if (files.length > 0) {
-          setSelectedMd(files[0]); // Select first by default
+          // Prefer README.md when available (case-insensitive), otherwise use first file
+          const preferred = files.find((f: string) => f.toLowerCase() === 'readme.md') || files[0];
+          setSelectedMd(preferred);
         }
       } else {
         setError(response.error?.message || 'Failed to load documentation files');
@@ -504,14 +506,6 @@ return (
     )}
 
     <Card>
-      <CardHeader>
-        <div>
-          <CardTitle>Documentation</CardTitle>
-          <CardDescription>
-            View project documentation files
-          </CardDescription>
-        </div>
-      </CardHeader>
 
       <CardContent>
         {loading && (
