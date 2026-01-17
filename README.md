@@ -182,7 +182,6 @@ Contributions are welcome! Please:
 - Fork the repo and create a feature branch
 - Open a pull request with a clear description
 - Follow the code style and add tests if possible
-- See [ARCHITECTURE_PROPOSAL.md](ARCHITECTURE_PROPOSAL.md) for design notes
 
 By participating, you agree to abide by the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/).
 
