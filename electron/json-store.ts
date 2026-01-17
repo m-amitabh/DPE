@@ -180,13 +180,26 @@ export class JSONStore {
 
   /**
    * Add or update project
+   * First tries to match by ID, then by path to prevent duplicates
    */
   async upsertProject(project: Project): Promise<void> {
     if (!this.data) {
       await this.load();
     }
     
-    const index = this.data!.projects.findIndex(p => p.id === project.id);
+    // First try to find by ID
+    let index = this.data!.projects.findIndex(p => p.id === project.id);
+    
+    // If not found by ID, try to find by path to prevent duplicates
+    if (index < 0) {
+      index = this.data!.projects.findIndex(p => p.path === project.path);
+      if (index >= 0) {
+        // Found existing project at same path with different ID
+        // This can happen if the project was re-scanned with a bug or imported
+        const existingId = this.data!.projects[index].id;
+        log.info(`Project at ${project.path} found with different ID (old: ${existingId}, new: ${project.id}), updating existing entry`);
+      }
+    }
     
     if (index >= 0) {
       this.data!.projects[index] = project;

@@ -34,6 +34,11 @@ export class ScanJobManager {
     const jobId = randomUUID();
     log.info(`Starting scan job ${jobId}`);
 
+    // Get existing projects from store to preserve IDs and user metadata
+    const store = getStore();
+    const existingProjects = await store.getAllProjects();
+    log.info(`Cache state before scan: ${existingProjects.length} projects`);
+
     this.currentJob = {
       id: jobId,
       status: 'running',
@@ -45,8 +50,8 @@ export class ScanJobManager {
       startedAt: Date.now()
     };
 
-    // Create scanner
-    this.scanner = new Scanner(config);
+    // Create scanner with existing projects
+    this.scanner = new Scanner(config, existingProjects);
     this.scanner.setProgressCallback((progress) => {
       if (this.currentJob && this.currentJob.id === jobId) {
         this.currentJob.progress = progress;
@@ -75,6 +80,8 @@ export class ScanJobManager {
 
       // Store discovered projects
       const store = getStore();
+      log.info(`Scan completed: ${result.projects.length} projects found`);
+      
       for (const project of result.projects) {
         await store.upsertProject(project);
       }
@@ -84,6 +91,8 @@ export class ScanJobManager {
 
       // Rebuild search index
       const allProjects = await store.getAllProjects();
+      log.info(`Cache state after scan: ${allProjects.length} projects`);
+      
       const searchIndex = getSearchIndex();
       searchIndex.buildIndex(allProjects);
 

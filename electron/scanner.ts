@@ -41,8 +41,15 @@ export interface ScanResult {
 export class Scanner {
   private cancelled = false;
   private onProgress?: (progress: ScanProgress) => void;
+  private existingProjects: Map<string, Project> = new Map();
 
-  constructor(private config: ScanConfig) {}
+  constructor(private config: ScanConfig, existingProjects: Project[] = []) {
+    // Build a map of existing projects by path for quick lookup
+    for (const project of existingProjects) {
+      this.existingProjects.set(project.path, project);
+    }
+    log.info(`Scanner initialized with ${existingProjects.length} existing projects`);
+  }
 
   /**
    * Set progress callback
@@ -223,15 +230,18 @@ export class Scanner {
       // Determine provider from git remotes
       const provider = gitInfo?.remotes[0]?.provider || null;
 
+      // Check if we have an existing project at this path
+      const existingProject = this.existingProjects.get(projectPath);
+      
       const project: Project = {
-        id: randomUUID(),
+        id: existingProject?.id || randomUUID(), // Reuse existing ID if available
         name: path.basename(projectPath),
         path: projectPath,
         type: isGit ? 'git' : 'local',
-        tags: [],
-        importance: 3,
+        tags: existingProject?.tags || [], // Preserve user-defined tags
+        importance: existingProject?.importance ?? 3, // Preserve user-defined importance
         sizeBytes: size,
-        createdAt: stats.birthtime.toISOString(),
+        createdAt: existingProject?.createdAt || stats.birthtime.toISOString(), // Preserve original creation time
         lastModifiedAt: stats.mtime.toISOString(),
         fileCount,
         provider,
