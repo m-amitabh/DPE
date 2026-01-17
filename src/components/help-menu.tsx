@@ -1,8 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { HelpCircle, ChevronRight, Github } from 'lucide-react';
+
 import { Button } from './ui/button';
 import { ipcAPI } from '../lib/ipc-api';
+// Version is injected at build time from package.json via Vite define
+const APP_VERSION = import.meta.env.VITE_APP_VERSION || '0.1.0';
 
 export function HelpMenu() {
   const [open, setOpen] = useState(false);
@@ -35,6 +38,12 @@ export function HelpMenu() {
 
           <div className="fixed right-6 top-[56px] w-64 rounded-lg bg-popover border shadow-lg z-50">
             <ul className="divide-y">
+              <li>
+                <div className="w-full px-4 py-3 flex items-center justify-between text-sm text-muted-foreground select-none cursor-default">
+                  <span className="flex items-center gap-2">Version</span>
+                  <span className="font-mono text-xs">{APP_VERSION}</span>
+                </div>
+              </li>
               <li>
                 <button
                   className="w-full text-left px-4 py-3 hover:bg-muted flex items-center justify-between"
