@@ -24,7 +24,9 @@ interface EditProjectDialogProps {
 export function EditProjectDialog({ project, open, onOpenChange, onSave }: EditProjectDialogProps) {
   const [name, setName] = useState(project.name);
   const [description, setDescription] = useState(project.description || '');
-  const [importance, setImportance] = useState<1 | 2 | 3 | 4 | 5>(project.importance);
+  const [importance, setImportance] = useState<0 | 1 | 2 | 3 | 4 | 5 | undefined>(
+    project.importance ?? undefined
+  );
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>(project.tags || []);
   const [saving, setSaving] = useState(false);
@@ -59,12 +61,15 @@ export function EditProjectDialog({ project, open, onOpenChange, onSave }: EditP
     setError(null);
 
     try {
-      await onSave(project.id, {
+      const updates: Partial<Project> = {
         name: name.trim(),
         description: description.trim() || undefined,
-        importance,
         tags,
-      });
+      };
+      // Only include importance if the user explicitly set it (allow 0 to clear)
+      if (importance !== undefined) updates.importance = importance as any;
+
+      await onSave(project.id, updates);
       onOpenChange(false);
     } catch (err: any) {
       setError(err.message || 'Failed to save changes');
@@ -77,7 +82,7 @@ export function EditProjectDialog({ project, open, onOpenChange, onSave }: EditP
     // Reset to original values
     setName(project.name);
     setDescription(project.description || '');
-    setImportance(project.importance);
+    setImportance(project.importance ?? undefined);
     setTags(project.tags || []);
     setTagInput('');
     setError(null);
@@ -134,7 +139,7 @@ export function EditProjectDialog({ project, open, onOpenChange, onSave }: EditP
                 >
                   <Star
                     className={`w-6 h-6 ${
-                      level <= importance
+                      level <= (importance ?? 0)
                         ? 'fill-yellow-400 text-yellow-400'
                         : 'text-gray-300'
                     }`}

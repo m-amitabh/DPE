@@ -97,10 +97,12 @@ export function ProjectDetailPage({
 
         {/* Metadata Badges */}
         <div className="flex flex-wrap gap-2">
-          <Badge variant={importanceBadgeVariant[project.importance]}>
-            <Star className="h-3 w-3 mr-1" />
-            Importance: {project.importance}/5
-          </Badge>
+          {typeof project.importance === 'number' && project.importance > 0 && (
+            <Badge variant={importanceBadgeVariant[project.importance as 1 | 2 | 3 | 4 | 5]}>
+              <Star className="h-3 w-3 mr-1" />
+              Importance: {project.importance}/5
+            </Badge>
+          )}
           {remoteProvider && (
             <Badge variant="outline">
               {remoteProvider}
