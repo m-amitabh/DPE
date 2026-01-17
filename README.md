@@ -1,11 +1,10 @@
 
 
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Build](https://img.shields.io/github/actions/workflow/status/m-amitabh/DPE/ci.yml?branch=main)](https://github.com/m-amitabh/DPE/actions)
+[![Releases](https://img.shields.io/github/v/release/m-amitabh/DPE)](https://github.com/m-amitabh/DPE/releases)
 
 # Desktop Project Explorer (DPE)
-
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Build](https://img.shields.io/github/actions/workflow/status/m-amitabh/DPE/build.yml?branch=main)](https://github.com/m-amitabh/DPE/actions)
-[![Releases](https://img.shields.io/github/v/release/m-amitabh/DPE)](https://github.com/m-amitabh/DPE/releases)
 
 **Desktop Project Explorer (DPE)** is a modern, open source desktop app for managing and exploring software projects on your local machine. Scan directories, visualize project metadata, browse files, and quickly open projects in your IDE or terminal.
 
