@@ -195,9 +195,9 @@ export class JSONStore {
       index = this.data!.projects.findIndex(p => p.path === project.path);
       if (index >= 0) {
         // Found existing project at same path with different ID
-        // This can happen if the project was re-scanned
-        // Log this for debugging
-        log.info(`Project at ${project.path} found with different ID, updating existing entry`);
+        // This can happen if the project was re-scanned with a bug or imported
+        const existingId = this.data!.projects[index].id;
+        log.info(`Project at ${project.path} found with different ID (old: ${existingId}, new: ${project.id}), updating existing entry`);
       }
     }
     
