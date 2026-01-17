@@ -1,6 +1,6 @@
 {
   "name": "desktop-project-explorer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Desktop application for managing and exploring software projects",
   "main": "dist-electron/main.js",
   "author": "m-amitabh",
