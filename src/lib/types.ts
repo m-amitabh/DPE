@@ -6,7 +6,8 @@ export interface Project {
   path: string;
   type: 'git' | 'local';
   tags: string[];
-  importance: 1 | 2 | 3 | 4 | 5;
+  // Importance is optional; 1-5 map to levels, 0 or null means 'None'
+  importance?: 1 | 2 | 3 | 4 | 5 | 0 | null;
   sizeBytes: number;
   createdAt: string;
   lastModifiedAt: string;

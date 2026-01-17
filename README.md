@@ -135,10 +135,10 @@ If macOS prevents the app from opening (common for downloads outside the App Sto
 1. In Finder, right-click (or Control-click) the app and choose "Open". In the dialog, click "Open" again — this allows the app while keeping Gatekeeper protections.
 2. If that doesn't work, open System Settings → Privacy & Security and look for an "Open Anyway" or allow option for the app under the General section.
 
-Advanced (optional): to remove quarantine flags for an app you trust:
+Advanced (optional): to remove quarantine flags for an app you trust -  This is what is mostly working. Copy the app to the Application directory and run below command:
 
 ```bash
-sudo xattr -rd com.apple.quarantine /Applications/"Desktop Project Explorer".app
+sudo xattr -rd com.apple.quarantine <Path of Desktop Project Explorer app>
 ```
 
 If macOS reports the app is "damaged and can't be opened", prefer a notarized release or use the right-click/Open flow above.

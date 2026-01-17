@@ -23,7 +23,20 @@ export function ProjectListItem({
   isSelected
 }: ProjectListItemProps) {
   const remoteUrl = project.remotes.length > 0 ? project.remotes[0].url : null;
-  const importanceBadge = project.importance >= 4 ? { variant: 'destructive', label: 'High' } : project.importance >= 2 ? { variant: 'default', label: 'Med' } : { variant: 'secondary', label: 'Low' };
+
+  // Determine explicit importance only if set (numeric > 0) or string (backcompat)
+  type ImportanceLevel = 'High' | 'Medium' | 'Low';
+  let importance: ImportanceLevel | null = null;
+  if (typeof (project as any).importance === 'string' && ["High","Medium","Low"].includes((project as any).importance)) {
+    importance = (project as any).importance as ImportanceLevel;
+  } else if (typeof (project as any).importance === 'number' && (project as any).importance > 0) {
+    const imp = (project as any).importance as number;
+    if (imp >= 4) importance = 'High';
+    else if (imp === 3) importance = 'Medium';
+    else importance = 'Low';
+  }
+
+  const importanceBadge = importance === 'High' ? { variant: 'destructive', label: 'High' } : importance === 'Medium' ? { variant: 'default', label: 'Medium' } : importance === 'Low' ? { variant: 'secondary', label: 'Low' } : null;
 
   return (
     <div
@@ -37,7 +50,7 @@ export function ProjectListItem({
         <div className="flex items-center gap-2">
           <span className="font-semibold truncate text-lg">{project.name}</span>
           {remoteUrl && <Badge variant="outline" className="gap-1"><Github className="h-3 w-3" />github</Badge>}
-          <Badge variant={importanceBadge.variant as any}>{importanceBadge.label}</Badge>
+          {importanceBadge && <Badge variant={importanceBadge.variant as any}>{importanceBadge.label}</Badge>}
         </div>
         <div className="flex flex-wrap gap-2 text-xs text-muted-foreground mt-1">
           <span className="flex items-center gap-1"><Clock className="h-3 w-3" />Last modified: {formatRelativeTime(project.lastModifiedAt)}</span>

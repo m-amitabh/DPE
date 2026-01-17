@@ -1,4 +1,4 @@
-import { FolderGit2, Folder, Github, GitBranch, HardDrive, Calendar, Clock, ExternalLink, Terminal, Code2 } from "lucide-react";
+import { FolderGit2, Folder, Github, Gitlab, GitBranch, HardDrive, Calendar, Clock, ExternalLink, Terminal, Code2 } from "lucide-react";
 import { Card, CardHeader, CardContent, CardFooter } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -33,14 +33,25 @@ export function ProjectCard({
   const remoteUrl = project.remotes.length > 0 ? project.remotes[0].url : null;
   const remoteProvider = getRemoteProvider(remoteUrl);
   
-  // Map numeric importance (1-5) to badge variant and label
-  const getImportanceBadge = (importance: number) => {
-    if (importance >= 4) return { variant: "destructive" as const, label: "High" };
-    if (importance >= 2) return { variant: "default" as const, label: "Med" };
-    return { variant: "secondary" as const, label: "Low" };
+  // Only show importance badge if explicitly set to 'High', 'Medium', or 'Low' (string)
+  type ImportanceLevel = 'High' | 'Medium' | 'Low';
+  const getImportanceBadge = (importance?: ImportanceLevel) => {
+    if (importance === 'High') return { variant: "destructive" as const, label: "High" };
+    if (importance === 'Medium') return { variant: "default" as const, label: "Medium" };
+    if (importance === 'Low') return { variant: "secondary" as const, label: "Low" };
+    return null;
   };
-  
-  const importanceBadge = getImportanceBadge(project.importance);
+
+  let importance: ImportanceLevel | null = null;
+  if (typeof project.importance === 'string' && ["High","Medium","Low"].includes(project.importance)) {
+    importance = project.importance as ImportanceLevel;
+  } else if (typeof project.importance === 'number' && project.importance > 0) {
+    // Map numeric star values to High/Medium/Low explicitly set by user
+    if (project.importance >= 4) importance = 'High';
+    else if (project.importance === 3) importance = 'Medium';
+    else if (project.importance <= 2) importance = 'Low';
+  }
+  const importanceBadge = getImportanceBadge(importance ?? undefined);
 
   const handleCardClick = (e: React.MouseEvent) => {
     // If clicking on action buttons, don't select
@@ -68,16 +79,20 @@ export function ProjectCard({
           <div className="flex items-center gap-1">
             {remoteProvider && (
               <Badge variant="outline" className="gap-1">
-                <Github className="h-3 w-3" />
+                {remoteProvider === 'github' && <Github className="h-3 w-3" />}
+                {remoteProvider === 'gitlab' && <Gitlab className="h-3 w-3 text-orange-500" />}
+                {remoteProvider === 'bitbucket' && <Code2 className="h-3 w-3 text-blue-500" />}
                 {remoteProvider}
               </Badge>
             )}
-            <Badge 
-              variant={importanceBadge.variant}
-              title={`Importance: ${project.importance}/5 (${importanceBadge.label})`}
-            >
-              {importanceBadge.label}
-            </Badge>
+            {importanceBadge && (
+              <Badge 
+                variant={importanceBadge.variant}
+                title={`Importance: ${importanceBadge.label}`}
+              >
+                {importanceBadge.label}
+              </Badge>
+            )}
           </div>
         </div>
       </CardHeader>

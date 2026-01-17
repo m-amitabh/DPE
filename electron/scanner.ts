@@ -239,7 +239,8 @@ export class Scanner {
         path: projectPath,
         type: isGit ? 'git' : 'local',
         tags: existingProject?.tags || [], // Preserve user-defined tags
-        importance: existingProject?.importance ?? 3, // Preserve user-defined importance
+        // Preserve user-defined importance; default to 0 (None) when not set
+        importance: existingProject?.importance ?? 0,
         sizeBytes: size,
         createdAt: existingProject?.createdAt || stats.birthtime.toISOString(), // Preserve original creation time
         lastModifiedAt: stats.mtime.toISOString(),
