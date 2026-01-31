@@ -41,6 +41,7 @@ export function Settings({ onClose, onSave }: SettingsProps) {
   ]);
   const [ideCommand, setIdeCommand] = useState<string>('code {path}');
   const [terminalCommand, setTerminalCommand] = useState<string>('');
+  const [scanMaxDepth, setScanMaxDepth] = useState<string>('10');
   const [theme, setTheme] = useState<'light'|'dark'|'system'>('system');
   const [activeTab, setActiveTab] = useState('paths');
 
@@ -69,7 +70,18 @@ export function Settings({ onClose, onSave }: SettingsProps) {
       alert('Please add at least one scan path');
       return;
     }
-    const settings = { scanPaths: validPaths, ignoredPatterns, ideCommand, terminalCommand, uiPrefs: { theme } };
+    // validate scanMaxDepth if provided
+    let maxDepthValue: number | undefined = undefined;
+    if ((scanMaxDepth || '').toString().trim().length > 0) {
+      const parsed = Number(scanMaxDepth);
+      if (Number.isNaN(parsed) || !Number.isFinite(parsed) || parsed < 0) {
+        alert('Scan max depth must be a non-negative integer');
+        return;
+      }
+      maxDepthValue = Math.max(0, Math.floor(parsed));
+    }
+    const settings: any = { scanPaths: validPaths, ignoredPatterns, ideCommand, terminalCommand, uiPrefs: { theme } };
+    if (typeof maxDepthValue !== 'undefined') settings.scanMaxDepth = maxDepthValue;
     try {
       await ipcAPI.setSettings(settings);
       toast.success('Settings saved');
@@ -86,7 +98,19 @@ export function Settings({ onClose, onSave }: SettingsProps) {
       alert('Please add at least one scan path');
       return;
     }
-    const settings = { scanPaths: validPaths, ignoredPatterns, ideCommand, terminalCommand, uiPrefs: { theme } };
+    // validate scanMaxDepth if provided
+    let maxDepthValue2: number | undefined = undefined;
+    if ((scanMaxDepth || '').toString().trim().length > 0) {
+      const parsed = Number(scanMaxDepth);
+      if (Number.isNaN(parsed) || !Number.isFinite(parsed) || parsed < 0) {
+        alert('Scan max depth must be a non-negative integer');
+        return;
+      }
+      maxDepthValue2 = Math.max(0, Math.floor(parsed));
+    }
+
+    const settings: any = { scanPaths: validPaths, ignoredPatterns, ideCommand, terminalCommand, uiPrefs: { theme } };
+    if (typeof maxDepthValue2 !== 'undefined') settings.scanMaxDepth = maxDepthValue2;
     try {
       await ipcAPI.setSettings(settings);
       toast.success('Settings saved. Starting scan...');
@@ -183,6 +207,7 @@ export function Settings({ onClose, onSave }: SettingsProps) {
           if (Array.isArray(s.ignoredPatterns)) setIgnoredPatterns(s.ignoredPatterns);
           if (s.ideCommand) setIdeCommand(s.ideCommand);
           if (s.terminalCommand) setTerminalCommand(s.terminalCommand);
+          if (typeof s.scanMaxDepth !== 'undefined' && s.scanMaxDepth !== null) setScanMaxDepth(String(s.scanMaxDepth));
           if (s.uiPrefs && s.uiPrefs.theme) setTheme(s.uiPrefs.theme);
         }
       } catch (err) {
@@ -247,6 +272,12 @@ export function Settings({ onClose, onSave }: SettingsProps) {
                   ))}
                 </div>
                 <Button variant="outline" size="sm" onClick={addPath} className="mt-3">+ Add another path</Button>
+
+                <div className="mt-4">
+                  <Label htmlFor="scan-max-depth" className="text-sm font-medium mb-2 block">Scan Max Depth</Label>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">Limit how deep the scanner will walk directories.</p>
+                  <Input id="scan-max-depth" type="number" min={0} value={scanMaxDepth} onChange={(e) => setScanMaxDepth(e.target.value)} placeholder="10" />
+                </div>
               </div>
             </TabsContent>
 

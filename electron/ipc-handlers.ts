@@ -319,6 +319,16 @@ export function setupIPCHandlers() {
       }
 
       // Start scan with configuration
+      // Read maxDepth from settings (fallback to 10)
+      const settings = await store.getSettings();
+      let configuredMaxDepth = 10;
+      if (settings && typeof settings.scanMaxDepth !== 'undefined') {
+        const parsed = Number(settings.scanMaxDepth);
+        if (!Number.isNaN(parsed) && Number.isFinite(parsed) && parsed >= 0) {
+          configuredMaxDepth = Math.max(0, Math.floor(parsed));
+        }
+      }
+
       const scanManager = getScanJobManager();
       const jobId = await scanManager.startScan({
         paths,
@@ -332,7 +342,7 @@ export function setupIPCHandlers() {
           '**/.venv/**',
           '**/__pycache__/**'
         ],
-        maxDepth: 5,
+        maxDepth: configuredMaxDepth,
         minSizeBytes: 0
       });
 

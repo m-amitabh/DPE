@@ -42,6 +42,7 @@ export class JSONStore {
         this.settingsCache = {
           scanPaths: [],
           ignoredPatterns: ['node_modules', '.git', 'dist'],
+          scanMaxDepth: 10,
           ideCommand: 'code {path}',
           terminalCommand: ''
         };
