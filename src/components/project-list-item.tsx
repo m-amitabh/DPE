@@ -1,4 +1,8 @@
 import { Project } from '../lib/types';
+import { useEffect, useState } from 'react';
+import { ipcAPI } from '../lib/ipc-api';
+import { detectRemoteProvider, getRemoteProvider } from '../lib/utils-project';
+import { GitPullRequest } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Github, GitBranch, HardDrive, Calendar, Clock, ExternalLink, Terminal, Code2 } from 'lucide-react';
@@ -23,6 +27,38 @@ export function ProjectListItem({
   isSelected
 }: ProjectListItemProps) {
   const remoteUrl = project.remotes.length > 0 ? project.remotes[0].url : null;
+  const [remoteProvider, setRemoteProvider] = useState<null | 'github' | 'gitlab' | 'bitbucket'>(getRemoteProvider(remoteUrl));
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await ipcAPI.getSettings();
+        if (!mounted) return;
+        const enterpriseHosts = res.success && res.data?.settings ? (res.data.settings.enterpriseHosts || []) : [];
+        const p = detectRemoteProvider(remoteUrl, enterpriseHosts);
+        setRemoteProvider(p);
+      } catch (e) {
+        // ignore
+      }
+    })();
+    return () => { mounted = false; };
+  }, [remoteUrl]);
+
+  const [unmergedCount, setUnmergedCount] = useState<number>(0);
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await ipcAPI.getUnmergedCount(project.id);
+        if (!mounted) return;
+        if (res.success && res.data) setUnmergedCount(res.data.count || 0);
+      } catch (e) {
+        // ignore
+      }
+    })();
+    return () => { mounted = false; };
+  }, [project.id]);
 
   // Determine explicit importance only if set (numeric > 0) or string (backcompat)
   type ImportanceLevel = 'High' | 'Medium' | 'Low';
@@ -49,7 +85,18 @@ export function ProjectListItem({
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span className="font-semibold truncate text-lg">{project.name}</span>
-          {remoteUrl && <Badge variant="outline" className="gap-1"><Github className="h-3 w-3" />github</Badge>}
+          {remoteProvider && <Badge variant="outline" className="gap-1">
+            {remoteProvider === 'github' && <Github className="h-3 w-3" />}
+            {remoteProvider === 'gitlab' && <svg className="h-3 w-3 text-orange-500" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l2.5 6.5L21 9l-5 3.7L17 20l-5-3-5 3 1-7.3L3 9l6.5-0.5L12 2z"/></svg>}
+            {remoteProvider === 'bitbucket' && <Code2 className="h-3 w-3 text-blue-500" />}
+            {remoteProvider}
+          </Badge>}
+          {unmergedCount > 0 && (
+            <Badge variant="destructive" className="gap-1">
+              <GitPullRequest className="h-3 w-3" />
+              {unmergedCount}
+            </Badge>
+          )}
           {importanceBadge && <Badge variant={importanceBadge.variant as any}>{importanceBadge.label}</Badge>}
         </div>
         <div className="flex flex-wrap gap-2 text-xs text-muted-foreground mt-1">

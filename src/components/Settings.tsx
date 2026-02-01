@@ -44,6 +44,7 @@ export function Settings({ onClose, onSave }: SettingsProps) {
   const [scanMaxDepth, setScanMaxDepth] = useState<string>('10');
   const [theme, setTheme] = useState<'light'|'dark'|'system'>('system');
   const [activeTab, setActiveTab] = useState('paths');
+  const [enterpriseHosts, setEnterpriseHosts] = useState<Array<{ host: string; provider: 'github'|'gitlab'|'bitbucket' }>>([]);
 
   const addPath = () => setPaths(prev => [...prev, { path: '' }]);
   const updatePath = (index: number, value: string) => setPaths(prev => prev.map((p, i) => i === index ? { ...p, path: value } : p));
@@ -80,7 +81,7 @@ export function Settings({ onClose, onSave }: SettingsProps) {
       }
       maxDepthValue = Math.max(0, Math.floor(parsed));
     }
-    const settings: any = { scanPaths: validPaths, ignoredPatterns, ideCommand, terminalCommand, uiPrefs: { theme } };
+    const settings: any = { scanPaths: validPaths, ignoredPatterns, ideCommand, terminalCommand, uiPrefs: { theme }, enterpriseHosts };
     if (typeof maxDepthValue !== 'undefined') settings.scanMaxDepth = maxDepthValue;
     try {
       await ipcAPI.setSettings(settings);
@@ -109,7 +110,7 @@ export function Settings({ onClose, onSave }: SettingsProps) {
       maxDepthValue2 = Math.max(0, Math.floor(parsed));
     }
 
-    const settings: any = { scanPaths: validPaths, ignoredPatterns, ideCommand, terminalCommand, uiPrefs: { theme } };
+    const settings: any = { scanPaths: validPaths, ignoredPatterns, ideCommand, terminalCommand, uiPrefs: { theme }, enterpriseHosts };
     if (typeof maxDepthValue2 !== 'undefined') settings.scanMaxDepth = maxDepthValue2;
     try {
       await ipcAPI.setSettings(settings);
@@ -208,6 +209,7 @@ export function Settings({ onClose, onSave }: SettingsProps) {
           if (s.ideCommand) setIdeCommand(s.ideCommand);
           if (s.terminalCommand) setTerminalCommand(s.terminalCommand);
           if (typeof s.scanMaxDepth !== 'undefined' && s.scanMaxDepth !== null) setScanMaxDepth(String(s.scanMaxDepth));
+          if (Array.isArray(s.enterpriseHosts)) setEnterpriseHosts(s.enterpriseHosts.map((e: any) => ({ host: e.host || '', provider: e.provider || 'github' })));
           if (s.uiPrefs && s.uiPrefs.theme) setTheme(s.uiPrefs.theme);
         }
       } catch (err) {
@@ -302,6 +304,25 @@ export function Settings({ onClose, onSave }: SettingsProps) {
                 <Label htmlFor="ide-cmd" className="text-base font-medium mb-2 block">IDE Command</Label>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Command to open projects in your IDE. Use <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">{'{path}'}</code> as placeholder.</p>
                 <Input id="ide-cmd" value={ideCommand} onChange={(e) => setIdeCommand(e.target.value)} placeholder='code {path}' />
+              </div>
+
+              <div className="mt-6">
+                <h4 className="text-lg font-medium mb-2">Enterprise Hosts</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Add custom enterprise Git hosts so repositories on those domains show the correct provider icon.</p>
+                <div className="space-y-2">
+                  {enterpriseHosts.map((h, idx) => (
+                    <div key={idx} className="flex gap-2 items-center">
+                      <Input value={h.host} onChange={(e) => setEnterpriseHosts(prev => prev.map((p, i) => i === idx ? { ...p, host: e.target.value } : p))} placeholder="git.yourcompany.com" className="flex-1" />
+                      <select value={h.provider} onChange={(e) => setEnterpriseHosts(prev => prev.map((p, i) => i === idx ? { ...p, provider: e.target.value as any } : p))} className="rounded-md border px-2 py-1">
+                        <option value="github">GitHub</option>
+                        <option value="gitlab">GitLab</option>
+                        <option value="bitbucket">Bitbucket</option>
+                      </select>
+                      <Button variant="ghost" size="sm" onClick={() => setEnterpriseHosts(prev => prev.filter((_, i) => i !== idx))} className="text-red-600">Remove</Button>
+                    </div>
+                  ))}
+                </div>
+                <Button variant="outline" size="sm" onClick={() => setEnterpriseHosts(prev => [...prev, { host: '', provider: 'github' }])} className="mt-3">+ Add Enterprise URL</Button>
               </div>
 
               <div>

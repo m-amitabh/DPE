@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, FolderGit2, Folder, Edit, ExternalLink, Terminal, Code2, Trash2, Calendar, HardDrive, GitBranch, Tag as TagIcon, Star, FileText, Loader2 } from 'lucide-react';
+import { ArrowLeft, FolderGit2, Folder, Edit, ExternalLink, Terminal, Code2, Trash2, Calendar, HardDrive, GitBranch, Tag as TagIcon, Star, FileText, Loader2, GitPullRequest } from 'lucide-react';
 import { Project, FileTreeNode } from '../lib/types';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -22,6 +22,39 @@ interface ProjectDetailPageProps {
   onOpenIDE: (project: Project) => void;
   onOpenTerminal: (project: Project) => void;
   onOpenRemote: (project: Project) => void;
+}
+
+function UnmergedInfo({ projectId }: { projectId: string }) {
+  const [count, setCount] = useState<number | null>(null);
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await ipcAPI.getUnmergedCount(projectId);
+        if (!mounted) return;
+        if (res.success && res.data) setCount(res.data.count || 0);
+        else setCount(0);
+      } catch (e) { setCount(0); }
+    })();
+    return () => { mounted = false; };
+  }, [projectId]);
+
+  if (count === null) return <div className="text-sm text-muted-foreground">Loading…</div>;
+
+  return (
+    <>
+      <Separator />
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-muted-foreground flex items-center gap-2">
+          <GitPullRequest className="h-4 w-4" />
+          <span>Uncommitted Changes</span>
+        </div>
+        <div className="text-sm font-medium">
+          {count && count > 0 ? `${count} file${count !== 1 ? 's' : ''}` : 'None'}
+        </div>
+      </div>
+    </>
+  );
 }
 
 export function ProjectDetailPage({
@@ -343,6 +376,8 @@ function OverviewTab({ project }: { project: Project }) {
           </div>
         </>
       )}
+      {/* Unmerged changes count (query via IPC) */}
+      <UnmergedInfo projectId={project.id} />
     </CardContent>
   </Card>
 )}

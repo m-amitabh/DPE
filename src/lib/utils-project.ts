@@ -22,6 +22,28 @@ export function getRemoteProvider(url: string | null | undefined): RemoteProvide
   return null;
 }
 
+// Detect provider, considering enterprise hosts registered by user
+export function detectRemoteProvider(url: string | null | undefined, enterpriseHosts?: Array<{ host: string; provider: RemoteProvider }>): RemoteProvider {
+  if (!url) return null;
+  // Check registered enterprise hosts first
+  if (Array.isArray(enterpriseHosts)) {
+    for (const eh of enterpriseHosts) {
+      try {
+        if (!eh || !eh.host) continue;
+        const host = eh.host.toLowerCase();
+        if (url.toLowerCase().includes(host)) {
+          return eh.provider || null;
+        }
+      } catch (e) {
+        // ignore malformed entries
+      }
+    }
+  }
+
+  // Fallback to public hosts
+  return getRemoteProvider(url);
+}
+
 export function sortProjects(projects: Project[], sortBy: SortBy): Project[] {
   const sorted = [...projects];
   

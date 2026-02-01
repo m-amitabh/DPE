@@ -641,6 +641,43 @@ export function setupIPCHandlers() {
   });
 
   /**
+   * Return count of uncommitted (working tree) changes for the current branch
+   */
+  ipcMain.handle('git:unmerged-count', async (event, params) => {
+    const requestId = params?.requestId || '';
+    try {
+      const { projectId } = params || {};
+      if (!projectId) {
+        return createResponse(false, undefined, { code: 'INVALID_INPUT', message: 'Project ID is required' }, requestId);
+      }
+
+      const project = await store.getProject(projectId);
+      if (!project || !project.path) {
+        return createResponse(false, undefined, { code: 'NOT_FOUND', message: `Project ${projectId} not found` }, requestId);
+      }
+
+      const { promisify } = require('util');
+      const { exec } = require('child_process');
+      const execAsync = promisify(exec);
+      const repoPath = project.path;
+
+      // Use `git status --porcelain` to detect uncommitted changes (staged, unstaged, untracked)
+      try {
+        const { stdout } = await execAsync(`git -C "${repoPath}" status --porcelain`);
+        const lines = (stdout || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+        const count = lines.length;
+        return createResponse(true, { count }, undefined, requestId);
+      } catch (e) {
+        // If git status fails (not a git repo), return 0
+        return createResponse(true, { count: 0 }, undefined, requestId);
+      }
+    } catch (error: any) {
+      log.error('Error getting uncommitted changes count:', error);
+      return createResponse(false, undefined, { code: 'INTERNAL_ERROR', message: error.message }, requestId);
+    }
+  });
+
+  /**
    * List recent commits for a project
    */
   ipcMain.handle('git:list-commits', async (event, params) => {
@@ -921,36 +958,68 @@ export function setupIPCHandlers() {
       }
 
       const { shell } = require('electron');
-      
+
+      // Load enterprise hosts from settings so we can detect enterprise providers
+      const settings = await store.getSettings();
+      const enterpriseHosts: Array<{ host: string; provider?: string }> = (settings && Array.isArray(settings.enterpriseHosts)) ? settings.enterpriseHosts : [];
+
       // Normalize remote URL so it opens in browser.
       // Support forms: git@host:owner/repo.git, ssh://git@host/owner/repo.git,
       // git+ssh://git@host/owner/repo.git, git://host/owner/repo.git, https://...
       let browserUrl = (remoteUrl || '').trim();
 
-      // git@host:owner/repo.git -> https://host/owner/repo
+      // Try to extract host + repoPath in a few common formats
+      let host: string | null = null;
+      let repoPath: string | null = null;
+
+      // git@host:owner/repo.git -> host, repoPath
       const sshShortMatch = browserUrl.match(/^git@([^:]+):(.+?)(?:\.git)?$/);
       if (sshShortMatch) {
-        const host = sshShortMatch[1];
-        const repoPath = sshShortMatch[2].replace(/\.git$/, '');
-        browserUrl = `https://${host}/${repoPath}`;
+        host = sshShortMatch[1];
+        repoPath = sshShortMatch[2].replace(/\.git$/, '');
       }
 
       // ssh://git@host/owner/repo.git or git+ssh://git@host/owner/repo.git
-      const sshUrlMatch = browserUrl.match(/^(?:git\+ssh:\/\/|ssh:\/\/)?(?:git@)?([^\/]+)\/(.+?)(?:\.git)?$/);
-      if (sshUrlMatch && !browserUrl.startsWith('http')) {
-        const host = sshUrlMatch[1];
-        const repoPath = sshUrlMatch[2].replace(/\.git$/, '');
-        browserUrl = `https://${host}/${repoPath}`;
+      if (!host) {
+        const sshUrlMatch = browserUrl.match(/^(?:git\+ssh:\/\/|ssh:\/\/)?(?:git@)?([^\/]+)\/(.+?)(?:\.git)?$/);
+        if (sshUrlMatch && !browserUrl.startsWith('http')) {
+          host = sshUrlMatch[1];
+          repoPath = sshUrlMatch[2].replace(/\.git$/, '');
+        }
       }
 
-      // git://host/owner/repo.git -> https://host/owner/repo
-      if (browserUrl.startsWith('git://')) {
+      // git://host/owner/repo.git -> transform to https and parse
+      if (!host && browserUrl.startsWith('git://')) {
         browserUrl = browserUrl.replace(/^git:\/\//, 'https://').replace(/\.git$/, '');
       }
 
-      // If it's an https URL, strip trailing .git
-      if (browserUrl.startsWith('http') && browserUrl.endsWith('.git')) {
-        browserUrl = browserUrl.replace(/\.git$/, '');
+      // If it's an https URL, parse host and repoPath
+      if (!host && browserUrl.startsWith('http')) {
+        try {
+          const u = new URL(browserUrl);
+          host = u.host;
+          repoPath = u.pathname.replace(/^\//, '').replace(/\.git$/, '');
+        } catch (e) {
+          // ignore parse errors
+        }
+      }
+
+      // If we have host+repoPath, prefer enterprise host matching when building URL
+      if (host && repoPath) {
+        const hostLower = host.toLowerCase();
+        const matched = enterpriseHosts.find(e => {
+          if (!e || !e.host) return false;
+          const eh = String(e.host).toLowerCase();
+          return hostLower === eh || hostLower.endsWith('.' + eh) || hostLower.includes(eh);
+        });
+
+        // Build https URL for both enterprise and public hosts
+        browserUrl = `https://${host}/${repoPath}`;
+      } else {
+        // Fallback: ensure no trailing .git for http urls
+        if (browserUrl.startsWith('http') && browserUrl.endsWith('.git')) {
+          browserUrl = browserUrl.replace(/\.git$/, '');
+        }
       }
 
       await shell.openExternal(browserUrl);

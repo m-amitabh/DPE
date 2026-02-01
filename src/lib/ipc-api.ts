@@ -28,6 +28,7 @@ const CHANNELS = {
   MARKDOWN_FETCH: 'markdown:fetch',
   GIT_LIST_BRANCHES: 'git:list-branches',
   GIT_LIST_COMMITS: 'git:list-commits',
+  GIT_UNMERGED_COUNT: 'git:unmerged-count',
   GIT_CHECKOUT: 'git:checkout',
   DIALOG_SELECT_FOLDER: 'dialog:select-folder',
   README_LIST: 'readme:list',
@@ -196,6 +197,13 @@ export class IPCAPI {
    */
   async listRecentCommits(projectId: string, limit: number = 20): Promise<IPCResponse<{ commits: Array<any> }>> {
     return this.invoke(CHANNELS.GIT_LIST_COMMITS, { projectId, limit });
+  }
+
+  /**
+   * Get number of branches with unmerged changes relative to default branch
+   */
+  async getUnmergedCount(projectId: string): Promise<IPCResponse<{ count: number }>> {
+    return this.invoke(CHANNELS.GIT_UNMERGED_COUNT, { projectId });
   }
 
   /**

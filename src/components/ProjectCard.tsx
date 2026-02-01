@@ -1,9 +1,11 @@
-import { FolderGit2, Folder, Github, Gitlab, GitBranch, HardDrive, Calendar, Clock, ExternalLink, Terminal, Code2 } from "lucide-react";
+import { FolderGit2, Folder, Github, Gitlab, GitBranch, HardDrive, Calendar, Clock, ExternalLink, Terminal, Code2, GitPullRequest } from "lucide-react";
 import { Card, CardHeader, CardContent, CardFooter } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Project } from "../lib/types";
-import { formatBytes, formatRelativeTime, getRemoteProvider } from "../lib/utils-project";
+import { formatBytes, formatRelativeTime, getRemoteProvider, detectRemoteProvider } from "../lib/utils-project";
+import { ipcAPI } from "../lib/ipc-api";
+import { useEffect, useState } from "react";
 import {
   Tooltip,
   TooltipContent,
@@ -31,7 +33,38 @@ export function ProjectCard({
   isSelected
 }: ProjectCardProps) {
   const remoteUrl = project.remotes.length > 0 ? project.remotes[0].url : null;
-  const remoteProvider = getRemoteProvider(remoteUrl);
+  const [remoteProvider, setRemoteProvider] = useState<null | 'github' | 'gitlab' | 'bitbucket'>(getRemoteProvider(remoteUrl));
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await ipcAPI.getSettings();
+        if (!mounted) return;
+        const enterpriseHosts = res.success && res.data?.settings ? (res.data.settings.enterpriseHosts || []) : [];
+        const p = detectRemoteProvider(remoteUrl, enterpriseHosts);
+        setRemoteProvider(p);
+      } catch (e) {
+        // ignore
+      }
+    })();
+    return () => { mounted = false; };
+  }, [remoteUrl]);
+
+  const [unmergedCount, setUnmergedCount] = useState<number>(0);
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await ipcAPI.getUnmergedCount(project.id);
+        if (!mounted) return;
+        if (res.success && res.data) setUnmergedCount(res.data.count || 0);
+      } catch (e) {
+        // ignore
+      }
+    })();
+    return () => { mounted = false; };
+  }, [project.id]);
   
   // Only show importance badge if explicitly set to 'High', 'Medium', or 'Low' (string)
   type ImportanceLevel = 'High' | 'Medium' | 'Low';
@@ -83,6 +116,12 @@ export function ProjectCard({
                 {remoteProvider === 'gitlab' && <Gitlab className="h-3 w-3 text-orange-500" />}
                 {remoteProvider === 'bitbucket' && <Code2 className="h-3 w-3 text-blue-500" />}
                 {remoteProvider}
+              </Badge>
+            )}
+            {unmergedCount > 0 && (
+              <Badge variant="destructive" className="gap-1">
+                <GitPullRequest className="h-3 w-3" />
+                {unmergedCount}
               </Badge>
             )}
             {importanceBadge && (
