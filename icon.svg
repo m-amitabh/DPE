@@ -1,0 +1,110 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main circle background -->
+  <circle cx="256" cy="256" r="240" fill="url(#gradient1)"/>
+  
+  <!-- Subtle inner circle glow -->
+  <circle cx="256" cy="256" r="200" fill="url(#gradient2)" opacity="0.3"/>
+  
+  <!-- Rays emanating to icons (3 rays to GitHub icons, 1 to search) -->
+  <g opacity="0.75">
+    <line x1="256" y1="256" x2="380" y2="140" stroke="url(#rayGradient1)" stroke-width="4" stroke-linecap="round"/>
+    <line x1="256" y1="256" x2="120" y2="240" stroke="url(#rayGradient2)" stroke-width="4" stroke-linecap="round"/>
+    <line x1="256" y1="256" x2="180" y2="390" stroke="url(#rayGradient3)" stroke-width="4" stroke-linecap="round"/>
+    <line x1="256" y1="256" x2="340" y2="390" stroke="url(#rayGradient4)" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Search icon at top right (scaled 3.5x) -->
+  <g transform="translate(380, 140) scale(3.5)" opacity="0.65">
+    <!-- Magnifying glass circle -->
+    <circle cx="0" cy="0" r="12" stroke="#ffffff" stroke-width="3" fill="none"/>
+    <!-- Magnifying glass handle -->
+    <path d="M 8.5 8.5 L 15 15" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+    <!-- Inner shine -->
+    <circle cx="-3" cy="-3" r="3" fill="#ffffff" opacity="0.4"/>
+  </g>
+  
+  <!-- GitHub octocat silhouettes (3 icons, scaled 4.8x larger) -->
+  <g transform="translate(120, 240) scale(4.8)" opacity="0.7">
+    <path d="M 0 -15 C -8 -15 -15 -8 -15 0 C -15 6 -11 11 -6 13 C -5 13.2 -4.8 12 -4.8 11.2 C -4.8 10.5 -4.8 9 -4.8 7.5 C -8 8.5 -9 6 -9 6 C -9.8 4.5 -11 3.8 -11 3.8 C -12.5 2.5 -10.8 2.5 -10.8 2.5 C -9 2.8 -8 4.8 -8 4.8 C -6.5 7.5 -4 6.5 -4.8 6 C -4.5 4.5 -4 3.2 -3.5 2.8 C -7 2.5 -10.5 1 -10.5 -3 C -10.5 -4.5 -10 -5.5 -8 -6.8 C -8.2 -7.2 -8.8 -8.5 -7.8 -10.2 C -7.8 -10.2 -6.5 -10.5 -4.8 -9 C -3.8 -9.5 -2.5 -9.8 -1.2 -9.8 C 0 -9.8 1.2 -9.5 2.2 -9 C 4 -10.5 5.2 -10.2 5.2 -10.2 C 6.2 -8.5 5.5 -7.2 5.2 -6.8 C 7 -5.5 7.8 -4.5 7.8 -3 C 7.8 1 4.2 2.5 0.8 2.8 C 1.5 3.5 2 5 2 7 C 2 9 2 10.8 2 11.2 C 2 12 2.2 13.2 3.2 13 C 8 11 12 6 12 0 C 12 -8 5 -15 0 -15 Z" fill="#ffffff"/>
+  </g>
+  
+  <g transform="translate(180, 390) scale(4.8)" opacity="0.7">
+    <path d="M 0 -15 C -8 -15 -15 -8 -15 0 C -15 6 -11 11 -6 13 C -5 13.2 -4.8 12 -4.8 11.2 C -4.8 10.5 -4.8 9 -4.8 7.5 C -8 8.5 -9 6 -9 6 C -9.8 4.5 -11 3.8 -11 3.8 C -12.5 2.5 -10.8 2.5 -10.8 2.5 C -9 2.8 -8 4.8 -8 4.8 C -6.5 7.5 -4 6.5 -4.8 6 C -4.5 4.5 -4 3.2 -3.5 2.8 C -7 2.5 -10.5 1 -10.5 -3 C -10.5 -4.5 -10 -5.5 -8 -6.8 C -8.2 -7.2 -8.8 -8.5 -7.8 -10.2 C -7.8 -10.2 -6.5 -10.5 -4.8 -9 C -3.8 -9.5 -2.5 -9.8 -1.2 -9.8 C 0 -9.8 1.2 -9.5 2.2 -9 C 4 -10.5 5.2 -10.2 5.2 -10.2 C 6.2 -8.5 5.5 -7.2 5.2 -6.8 C 7 -5.5 7.8 -4.5 7.8 -3 C 7.8 1 4.2 2.5 0.8 2.8 C 1.5 3.5 2 5 2 7 C 2 9 2 10.8 2 11.2 C 2 12 2.2 13.2 3.2 13 C 8 11 12 6 12 0 C 12 -8 5 -15 0 -15 Z" fill="#ffffff"/>
+  </g>
+  
+  <g transform="translate(340, 390) scale(4.8)" opacity="0.7">
+    <path d="M 0 -15 C -8 -15 -15 -8 -15 0 C -15 6 -11 11 -6 13 C -5 13.2 -4.8 12 -4.8 11.2 C -4.8 10.5 -4.8 9 -4.8 7.5 C -8 8.5 -9 6 -9 6 C -9.8 4.5 -11 3.8 -11 3.8 C -12.5 2.5 -10.8 2.5 -10.8 2.5 C -9 2.8 -8 4.8 -8 4.8 C -6.5 7.5 -4 6.5 -4.8 6 C -4.5 4.5 -4 3.2 -3.5 2.8 C -7 2.5 -10.5 1 -10.5 -3 C -10.5 -4.5 -10 -5.5 -8 -6.8 C -8.2 -7.2 -8.8 -8.5 -7.8 -10.2 C -7.8 -10.2 -6.5 -10.5 -4.8 -9 C -3.8 -9.5 -2.5 -9.8 -1.2 -9.8 C 0 -9.8 1.2 -9.5 2.2 -9 C 4 -10.5 5.2 -10.2 5.2 -10.2 C 6.2 -8.5 5.5 -7.2 5.2 -6.8 C 7 -5.5 7.8 -4.5 7.8 -3 C 7.8 1 4.2 2.5 0.8 2.8 C 1.5 3.5 2 5 2 7 C 2 9 2 10.8 2 11.2 C 2 12 2.2 13.2 3.2 13 C 8 11 12 6 12 0 C 12 -8 5 -15 0 -15 Z" fill="#ffffff"/>
+  </g>
+  
+  <!-- Central project/folder icon -->
+  <g transform="translate(256, 256)">
+    <!-- Simplified folder/project representation -->
+    <circle cx="0" cy="0" r="35" fill="url(#centerGlow)" opacity="0.4"/>
+    <path d="M -20 -10 L -20 15 L 20 15 L 20 -5 L 5 -5 L 0 -10 Z" fill="#ffffff" opacity="0.9" stroke="#ffffff" stroke-width="2"/>
+    <circle cx="0" cy="5" r="8" fill="url(#gradient1)" opacity="0.6"/>
+  </g>
+  
+  <!-- Decorative stars sprinkled around -->
+  <!-- Star cluster 1 - top area -->
+  <path d="M 200 120 L 204 130 L 214 130 L 206 136 L 209 146 L 200 140 L 191 146 L 194 136 L 186 130 L 196 130 Z" fill="#ffd700" opacity="0.85"/>
+  <circle cx="185" cy="105" r="2.5" fill="#ffffff" opacity="0.8"/>
+  <circle cx="218" cy="108" r="2" fill="#ffffff" opacity="0.75"/>
+  
+  <!-- Star cluster 2 - right area -->
+  <path d="M 420 200 L 424 210 L 434 210 L 426 216 L 429 226 L 420 220 L 411 226 L 414 216 L 406 210 L 416 210 Z" fill="#ffd700" opacity="0.85"/>
+  <circle cx="405" cy="185" r="2.5" fill="#ffffff" opacity="0.8"/>
+  <circle cx="438" cy="188" r="2" fill="#ffffff" opacity="0.75"/>
+  
+  <!-- Star 3 - left area -->
+  <path d="M 80 220 L 83 227 L 90 227 L 84 231 L 87 238 L 80 234 L 73 238 L 76 231 L 70 227 L 77 227 Z" fill="#ffd700" opacity="0.8"/>
+  
+  <!-- Star cluster 3 - bottom area -->
+  <circle cx="256" cy="430" r="3" fill="#ffffff" opacity="0.9"/>
+  <circle cx="275" cy="425" r="2" fill="#ffffff" opacity="0.75"/>
+  <circle cx="237" cy="425" r="2" fill="#ffffff" opacity="0.75"/>
+  
+  <!-- Extra sparkles -->
+  <circle cx="300" cy="180" r="2" fill="#ffd700" opacity="0.7"/>
+  <circle cx="150" cy="330" r="2" fill="#ffffff" opacity="0.65"/>
+  <circle cx="370" cy="300" r="2.5" fill="#ffffff" opacity="0.7"/>
+  <circle cx="140" cy="180" r="2" fill="#ffd700" opacity="0.7"/>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+    
+    <radialGradient id="gradient2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0" />
+    </radialGradient>
+    
+    <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0" />
+    </radialGradient>
+    
+    <linearGradient id="rayGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d9ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4dd0e1;stop-opacity:0.3" />
+    </linearGradient>
+    
+    <linearGradient id="rayGradient2" x1="100%" y1="0%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#4dd0e1;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#00d9ff;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="rayGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d9ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4dd0e1;stop-opacity:0.3" />
+    </linearGradient>
+    
+    <linearGradient id="rayGradient4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d9ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4dd0e1;stop-opacity:0.3" />
+    </linearGradient>
+  </defs>
+</svg>

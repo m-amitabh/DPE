@@ -90,7 +90,7 @@ export interface IPCResponse<T = any> {
   success: boolean;
   data?: T;
   error?: {
-    code: 'NOT_FOUND' | 'PERMISSION_DENIED' | 'INVALID_INPUT' | 'TIMEOUT' | 'INTERNAL_ERROR' | 'UNCOMMITTED_CHANGES';
+    code: 'NOT_FOUND' | 'PERMISSION_DENIED' | 'INVALID_INPUT' | 'TIMEOUT' | 'INTERNAL_ERROR' | 'UNCOMMITTED_CHANGES' | 'CANCELLED';
     message: string;
     details?: any;
   };

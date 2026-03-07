@@ -1,6 +1,6 @@
 {
   "name": "desktop-project-explorer",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Desktop application for managing and exploring software projects",
   "main": "dist-electron/main.js",
   "author": "m-amitabh",
@@ -78,7 +78,7 @@
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.16",
     "concurrently": "^8.2.2",
-    "electron": "^28.1.0",
+    "electron": "^28.3.3",
     "electron-builder": "^24.9.1",
     "postcss": "^8.4.33",
     "tailwindcss": "^3.4.1",
@@ -100,18 +100,21 @@
     ],
     "mac": {
       "category": "public.app-category.developer-tools",
+      "icon": "build/icons/icon_512x512.png",
       "target": [
         "dmg",
         "zip"
       ]
     },
     "win": {
+      "icon": "build/icons/icon_256x256.png",
       "target": [
         "nsis",
         "portable"
       ]
     },
     "linux": {
+      "icon": "build/icons/icon_512x512.png",
       "target": [
         "AppImage",
         "deb"

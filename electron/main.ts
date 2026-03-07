@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, nativeImage } from 'electron';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import log from 'electron-log';
@@ -34,12 +34,18 @@ if (!gotTheLock) {
 }
 
 function createWindow() {
+  // Determine icon path
+  const iconPath = isDev
+    ? path.join(__dirname, '../build/icons/icon_512x512.png')
+    : path.join(__dirname, '../build/icons/icon_512x512.png');
+
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 800,
     minWidth: 1024,
     minHeight: 600,
     title: 'Desktop Project Explorer',
+    icon: iconPath,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -89,6 +95,18 @@ async function initializeApp() {
 
 // App lifecycle
 app.whenReady().then(async () => {
+  // Set dock icon for macOS
+  if (process.platform === 'darwin') {
+    const iconPath = path.join(__dirname, '../build/icons/icon_512x512.png');
+    const icon = nativeImage.createFromPath(iconPath);
+    if (app.dock && !icon.isEmpty()) {
+      app.dock.setIcon(icon);
+      log.info('Dock icon set successfully');
+    } else {
+      log.warn('Failed to load icon from:', iconPath);
+    }
+  }
+
   await initializeApp();
   createWindow();
 

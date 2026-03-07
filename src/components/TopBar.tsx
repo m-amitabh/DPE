@@ -1,4 +1,4 @@
-import { Search, Settings, RefreshCw, FolderGit2, Github } from "lucide-react";
+import { Search, Settings, RefreshCw, FolderGit2, Github, X } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { HelpMenu } from './help-menu';
@@ -31,8 +31,17 @@ export function TopBar({ searchQuery, onSearchChange, onRefresh, onSettingsClick
               placeholder="Search projects..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-9"
+              className="pl-9 pr-9"
             />
+            {searchQuery && (
+              <button
+                onClick={() => onSearchChange('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                aria-label="Clear search"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
         </div>
 
