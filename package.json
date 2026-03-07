@@ -100,7 +100,7 @@
     ],
     "mac": {
       "category": "public.app-category.developer-tools",
-      "icon": "build/icons/icon_512x512.png",
+      "icon": "build/icon.icns",
       "target": [
         "dmg",
         "zip"

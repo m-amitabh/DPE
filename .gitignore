@@ -6,7 +6,8 @@ pnpm-lock.yaml
 
 # Build outputs
 dist/
-build/
+build/*
+!build/icon.icns
 out/
 .vite/
 *.js.map
