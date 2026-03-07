@@ -1,9 +1,9 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Main circle background -->
-  <circle cx="256" cy="256" r="240" fill="url(#gradient1)"/>
+  <!-- Main rounded square background -->
+  <rect x="16" y="16" width="480" height="480" rx="80" ry="80" fill="url(#gradient1)"/>
   
-  <!-- Subtle inner circle glow -->
-  <circle cx="256" cy="256" r="200" fill="url(#gradient2)" opacity="0.3"/>
+  <!-- Subtle inner glow -->
+  <rect x="36" y="36" width="440" height="440" rx="70" ry="70" fill="url(#gradient2)" opacity="0.3"/>
   
   <!-- Rays emanating to icons (3 rays to GitHub icons, 1 to search) -->
   <g opacity="0.75">
